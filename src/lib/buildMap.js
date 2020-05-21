@@ -1,6 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import mapboxLayer from '../mapbox/mapboxLayer';
 import mapboxPopup from '../mapbox/mapboxPopup';
+import buildPopupHTML from './buildPopupHTML';
 
 export default (mapElementRef, mapboxFeaturesData) => {
     /*
@@ -34,32 +35,18 @@ export default (mapElementRef, mapboxFeaturesData) => {
         // Add layer
         map.addLayer(mapboxLayer);
 
+        // Configure tooltip
         map.on('mouseenter', 'circles', (e) => {
-            const {
-                confirmed,
-                deaths,
-                country,
-                state,
-            } = e.features[0].properties;
+            const { properties, geometry } = e.features[0];
+            const { confirmed, deaths, country, state } = properties;
+
+            const popupHTML = buildPopupHTML(confirmed, deaths, country, state);
 
             // Change the pointer type on mouseenter
             map.getCanvas().style.cursor = 'pointer';
 
-            const coordinates = e.features[0].geometry.coordinates.slice();
-
-            const stateHTML = state
-                ? `<p>State/Province: <b>${state}</b></p>`
-                : '';
-                
-            const mortalityRate = ((deaths / confirmed) * 100).toFixed(2);
-
-            const countryHTML
-            const HTML = `<p>Country: <b>${country}</b></p>
-                  ${stateHTML}
-                  <p>Cases: <b>${confirmed}</b></p>
-                  <p>Deaths: <b>${deaths}</b></p>
-                  <p>Mortality Rate: <b>${mortalityRate}%</b></p>
-                  `;
+            // get the coordinates of the data point
+            const coordinates = geometry.coordinates.slice();
 
             // Ensure that if the map is zoomed out such that multiple
             // copies of the feature are visible, the popup appears
@@ -68,7 +55,7 @@ export default (mapElementRef, mapboxFeaturesData) => {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
 
-            mapboxPopup.setLngLat(coordinates).setHTML(HTML).addTo(map);
+            mapboxPopup.setLngLat(coordinates).setHTML(popupHTML).addTo(map);
         });
 
         map.on('mouseleave', 'circles', () => {
