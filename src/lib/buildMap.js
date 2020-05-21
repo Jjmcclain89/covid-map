@@ -40,7 +40,7 @@ export default (mapElementRef, mapboxFeaturesData) => {
             const { properties, geometry } = e.features[0];
             const { confirmed, deaths, country, state } = properties;
 
-            const popupHTML = buildPopupHTML(confirmed, deaths, country, state);
+            const popupHTML = buildPopupHTML(country, state, deaths, confirmed);
 
             // Change the pointer type on mouseenter
             map.getCanvas().style.cursor = 'pointer';

@@ -4,10 +4,9 @@ export default (country, state, deaths, confirmed) => {
 
     const mortalityRate = ((deaths / confirmed) * 100).toFixed(2);
 
-    const mortalityRateHTML =
-        deaths && confirmed
-            ? `<p>Mortality Rate: <b>${mortalityRate}%</b></p>`
-            : '';
+    const mortalityRateHTML = !isNaN(mortalityRate)
+        ? `<p>Mortality Rate: <b>${mortalityRate}%</b></p>`
+        : '';
     const confirmedHTML = confirmed ? `<p>Cases: <b>${confirmed}</b></p>` : '';
 
     const deathsHTML = deaths ? `<p>Deaths: <b>${deaths}</b></p>` : '';
